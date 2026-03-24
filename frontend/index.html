@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Submit your health data for AI-powered preventive healthcare score">
+    <title>Health Data — Healthcare Score System</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💚</text></svg>">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <a href="index.html" class="navbar-brand">
+            <div class="logo-icon">💚</div>
+            HealthScore AI
+        </a>
+        <div class="navbar-links">
+            <a href="index.html" class="active">Health Data</a>
+            <a href="dashboard.html">Dashboard</a>
+            <a href="report.html">Reports</a>
+            <a href="chatbot.html">AI Chat</a>
+            <button class="btn-logout" onclick="handleLogout()">Logout</button>
+        </div>
+    </nav>
+
+    <div class="page-container">
+        <div class="health-form-container">
+            <div class="page-header animate-in">
+                <h1>📋 Health Data Entry</h1>
+                <p>Enter your health metrics to generate your AI-powered preventive healthcare score</p>
+            </div>
+
+            <div id="alertBox"></div>
+
+            <!-- BMI Display -->
+            <div class="bmi-display animate-in stagger-1" id="bmiDisplay" style="display:none">
+                <div>Your BMI</div>
+                <div class="bmi-value" id="bmiValue">—</div>
+                <div class="bmi-category" id="bmiCategory">Enter height & weight</div>
+            </div>
+
+            <form id="healthForm" onsubmit="handleSubmitHealth(event)">
+                <div class="card animate-in stagger-2" style="margin-bottom:1.5rem">
+                    <div class="card-header"><h3 class="card-title"><span class="card-icon blue">👤</span> Personal Info</h3></div>
+                    <div class="health-form-grid">
+                        <div class="form-group">
+                            <label for="name">Full Name</label>
+                            <input type="text" id="name" class="form-control" placeholder="Your name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="age">Age</label>
+                            <input type="number" id="age" class="form-control" placeholder="25" min="1" max="120" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="gender">Gender</label>
+                            <select id="gender" class="form-control" required>
+                                <option value="">Select</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card animate-in stagger-3" style="margin-bottom:1.5rem">
+                    <div class="card-header"><h3 class="card-title"><span class="card-icon green">📏</span> Body Measurements</h3></div>
+                    <div class="health-form-grid">
+                        <div class="form-group">
+                            <label for="height">Height (cm)</label>
+                            <input type="number" id="height" class="form-control" placeholder="170" min="50" max="250" step="0.1" required oninput="updateBMI()">
+                        </div>
+                        <div class="form-group">
+                            <label for="weight">Weight (kg)</label>
+                            <input type="number" id="weight" class="form-control" placeholder="70" min="10" max="300" step="0.1" required oninput="updateBMI()">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card animate-in stagger-4" style="margin-bottom:1.5rem">
+                    <div class="card-header"><h3 class="card-title"><span class="card-icon red">❤️</span> Vitals</h3></div>
+                    <div class="health-form-grid">
+                        <div class="form-group">
+                            <label for="blood_pressure">Blood Pressure (sys/dia)</label>
+                            <input type="text" id="blood_pressure" class="form-control" placeholder="120/80" required pattern="\d{2,3}/\d{2,3}">
+                        </div>
+                        <div class="form-group">
+                            <label for="sugar_level">Sugar Level (mg/dL)</label>
+                            <input type="number" id="sugar_level" class="form-control" placeholder="90" min="30" max="600" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="heart_rate">Heart Rate (bpm)</label>
+                            <input type="number" id="heart_rate" class="form-control" placeholder="72" min="30" max="200" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card animate-in stagger-5" style="margin-bottom:1.5rem">
+                    <div class="card-header"><h3 class="card-title"><span class="card-icon purple">🏃</span> Lifestyle</h3></div>
+                    <div class="health-form-grid">
+                        <div class="form-group">
+                            <label for="sleep_hours">Sleep (hours/day)</label>
+                            <input type="number" id="sleep_hours" class="form-control" placeholder="7" min="0" max="24" step="0.5" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="exercise_minutes">Exercise (min/day)</label>
+                            <input type="number" id="exercise_minutes" class="form-control" placeholder="30" min="0" max="600" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="steps_per_day">Steps Per Day</label>
+                            <input type="number" id="steps_per_day" class="form-control" placeholder="8000" min="0" max="50000" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="water_intake">Water Intake (liters)</label>
+                            <input type="number" id="water_intake" class="form-control" placeholder="2.5" min="0" max="15" step="0.1" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="smoking">Smoking</label>
+                            <select id="smoking" class="form-control" required>
+                                <option value="No">No</option>
+                                <option value="Yes">Yes</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="alcohol">Alcohol Consumption</label>
+                            <select id="alcohol" class="form-control" required>
+                                <option value="No">No</option>
+                                <option value="Yes">Yes</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" id="submitBtn" class="btn btn-primary btn-full" style="padding:1rem; font-size:1.05rem;">
+                    🤖 Generate AI Health Score
+                </button>
+            </form>
+
+            <!-- Result Card (hidden initially) -->
+            <div id="resultCard" class="card" style="display:none; margin-top:2rem">
+                <div class="card-header"><h3 class="card-title"><span class="card-icon green">🎯</span> Your Health Score</h3></div>
+                <div class="score-display" id="resultScore"></div>
+                <div id="resultRisk" style="text-align:center; margin-bottom:1rem;"></div>
+                <p id="resultSummary" style="text-align:center; color:var(--text-secondary); margin-bottom:1.5rem;"></p>
+                <h4 style="margin-bottom:0.75rem;">Recommendations</h4>
+                <ul class="rec-list" id="resultRecs"></ul>
+                <div style="margin-top:1.5rem;">
+                    <h4 style="margin-bottom:0.75rem;">Doctor Recommendations</h4>
+                    <div id="resultDoctorRecs"></div>
+                </div>
+                <div style="text-align:center; margin-top:1.5rem;">
+                    <a href="dashboard.html" class="btn btn-primary">View Full Dashboard →</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        requireAuth().then(user => {
+            if (user) document.getElementById("name").value = user.name;
+        });
+
+        function updateBMI() {
+            const h = parseFloat(document.getElementById("height").value);
+            const w = parseFloat(document.getElementById("weight").value);
+            const display = document.getElementById("bmiDisplay");
+            if (h > 0 && w > 0) {
+                const { bmi, category } = calculateBMI(h, w);
+                document.getElementById("bmiValue").textContent = bmi;
+                document.getElementById("bmiCategory").textContent = category;
+                display.style.display = "block";
+            } else {
+                display.style.display = "none";
+            }
+        }
+
+        async function handleSubmitHealth(e) {
+            e.preventDefault();
+            const btn = document.getElementById("submitBtn");
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loader"></span> Analyzing with AI...';
+
+            const formData = {
+                name: document.getElementById("name").value,
+                age: parseInt(document.getElementById("age").value),
+                gender: document.getElementById("gender").value,
+                height: parseFloat(document.getElementById("height").value),
+                weight: parseFloat(document.getElementById("weight").value),
+                blood_pressure: document.getElementById("blood_pressure").value,
+                sugar_level: parseFloat(document.getElementById("sugar_level").value),
+                heart_rate: parseFloat(document.getElementById("heart_rate").value),
+                sleep_hours: parseFloat(document.getElementById("sleep_hours").value),
+                exercise_minutes: parseFloat(document.getElementById("exercise_minutes").value),
+                steps_per_day: parseFloat(document.getElementById("steps_per_day").value),
+                water_intake: parseFloat(document.getElementById("water_intake").value),
+                smoking: document.getElementById("smoking").value,
+                alcohol: document.getElementById("alcohol").value,
+            };
+
+            try {
+                const result = await api("/submit-health-data", {
+                    method: "POST",
+                    body: JSON.stringify(formData),
+                });
+
+                // Show result
+                const resultCard = document.getElementById("resultCard");
+                resultCard.style.display = "block";
+                resultCard.scrollIntoView({ behavior: "smooth" });
+
+                renderScoreCircle("resultScore", result.score);
+
+                const riskEl = document.getElementById("resultRisk");
+                riskEl.innerHTML = `<span class="risk-badge ${getRiskClass(result.risk_level)}">${result.risk_level}</span>`;
+
+                document.getElementById("resultSummary").textContent = result.summary;
+                renderRecommendations("resultRecs", result.recommendations);
+                renderDoctorRecs("resultDoctorRecs", result.doctor_recommendations);
+
+                showAlert("alertBox", "Health data submitted successfully!", "success");
+            } catch (err) {
+                showAlert("alertBox", err.message);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '🤖 Generate AI Health Score';
+            }
+        }
+    </script>
+</body>
+</html>
