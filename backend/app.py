@@ -10,7 +10,7 @@ from datetime import datetime
 from functools import wraps
 from flask import Flask, request, jsonify, session
 from flask_cors import CORS
-from gemini_ai import (
+from backend.gemini_ai import (
     calculate_health_score,
     get_chatbot_response,
     generate_monthly_report,
