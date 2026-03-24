@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="AI Health Chatbot - Ask health questions and get AI-powered answers">
+    <title>AI Chatbot — Healthcare Score System</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💚</text></svg>">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <a href="index.html" class="navbar-brand">
+            <div class="logo-icon">💚</div>
+            HealthScore AI
+        </a>
+        <div class="navbar-links">
+            <a href="index.html">Health Data</a>
+            <a href="dashboard.html">Dashboard</a>
+            <a href="report.html">Reports</a>
+            <a href="chatbot.html" class="active">AI Chat</a>
+            <button class="btn-logout" onclick="handleLogout()">Logout</button>
+        </div>
+    </nav>
+
+    <div class="page-container">
+        <div class="chat-container">
+            <div class="page-header">
+                <h1>🤖 AI Health Assistant</h1>
+                <p>Ask me anything about health, wellness, or preventive care</p>
+            </div>
+
+            <!-- Chat Messages -->
+            <div class="chat-messages" id="chatMessages">
+                <div class="chat-bubble bot">
+                    <div class="bot-label">🤖 AI Health Assistant</div>
+                    Hello! 👋 I'm your AI-powered health assistant. I can help with questions about:
+                    <br><br>
+                    🏃 <strong>Exercise & Fitness</strong><br>
+                    🥗 <strong>Nutrition & Diet</strong><br>
+                    😴 <strong>Sleep & Recovery</strong><br>
+                    ❤️ <strong>Heart & Cardiovascular Health</strong><br>
+                    🧠 <strong>Mental Wellness</strong><br>
+                    💊 <strong>Preventive Healthcare</strong><br>
+                    <br>
+                    How can I help you today?
+                </div>
+            </div>
+
+            <!-- Chat Input -->
+            <div class="chat-input-area">
+                <input type="text" id="chatInput" class="form-control"
+                       placeholder="Type your health question..."
+                       onkeydown="if(event.key==='Enter') sendChatMessage()">
+                <button class="btn btn-primary" onclick="sendChatMessage()" id="sendBtn">
+                    Send
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        requireAuth();
+
+        // Quick suggestion chips
+        const suggestions = [
+            "How can I improve my sleep?",
+            "What's a healthy BMI range?",
+            "Best exercises for heart health",
+            "How much water should I drink daily?",
+            "Tips to reduce stress",
+            "How to lower blood pressure naturally?"
+        ];
+
+        // Add suggestion chips after welcome message
+        const chatMessages = document.getElementById("chatMessages");
+        const chipsDiv = document.createElement("div");
+        chipsDiv.style.cssText = "display:flex; flex-wrap:wrap; gap:0.5rem; padding:0.5rem 0;";
+        suggestions.forEach(s => {
+            const chip = document.createElement("button");
+            chip.className = "btn btn-secondary";
+            chip.style.cssText = "font-size:0.8rem; padding:0.4rem 0.8rem;";
+            chip.textContent = s;
+            chip.onclick = () => {
+                document.getElementById("chatInput").value = s;
+                sendChatMessage();
+                chipsDiv.remove();
+            };
+            chipsDiv.appendChild(chip);
+        });
+        chatMessages.appendChild(chipsDiv);
+
+        document.getElementById("chatInput").focus();
+    </script>
+</body>
+</html>

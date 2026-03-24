@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Login to AI-Powered Preventive Healthcare Score System">
+    <title>Login — Healthcare Score System</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💚</text></svg>">
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card animate-in">
+            <div class="auth-header">
+                <div class="logo-circle">💚</div>
+                <h1>Welcome Back</h1>
+                <p class="subtitle">Sign in to your healthcare dashboard</p>
+            </div>
+
+            <div id="alertBox"></div>
+
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" class="form-control" placeholder="you@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" class="form-control" placeholder="••••••••" required>
+                </div>
+                <button type="submit" id="loginBtn" class="btn btn-primary btn-full">
+                    Sign In
+                </button>
+            </form>
+
+            <p style="text-align:center; margin-top:1.5rem; color:var(--text-secondary); font-size:0.9rem;">
+                Don't have an account? <a href="register.html">Create one</a>
+            </p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // Redirect if already logged in
+        checkAuth().then(user => {
+            if (user) window.location.href = "index.html";
+        });
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            const btn = document.getElementById("loginBtn");
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loader"></span> Signing in...';
+
+            try {
+                const data = await api("/login", {
+                    method: "POST",
+                    body: JSON.stringify({
+                        email: document.getElementById("email").value,
+                        password: document.getElementById("password").value,
+                    }),
+                });
+                showAlert("alertBox", "Login successful! Redirecting...", "success");
+                setTimeout(() => window.location.href = "index.html", 800);
+            } catch (err) {
+                showAlert("alertBox", err.message);
+                btn.disabled = false;
+                btn.textContent = "Sign In";
+            }
+        }
+    </script>
+</body>
+</html>

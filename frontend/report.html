@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Monthly health report with AI analysis">
+    <title>Monthly Report — Healthcare Score System</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💚</text></svg>">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <a href="index.html" class="navbar-brand">
+            <div class="logo-icon">💚</div>
+            HealthScore AI
+        </a>
+        <div class="navbar-links">
+            <a href="index.html">Health Data</a>
+            <a href="dashboard.html">Dashboard</a>
+            <a href="report.html" class="active">Reports</a>
+            <a href="chatbot.html">AI Chat</a>
+            <button class="btn-logout" onclick="handleLogout()">Logout</button>
+        </div>
+    </nav>
+
+    <div class="page-container">
+        <div class="page-header">
+            <h1>📄 Monthly Health Report</h1>
+            <p>AI-generated analysis of your monthly health trends</p>
+        </div>
+
+        <!-- Month Selector -->
+        <div class="report-header">
+            <div class="month-selector">
+                <label style="color:var(--text-secondary); font-size:0.9rem;">Select Month:</label>
+                <input type="month" id="monthPicker" class="form-control" style="width:auto" onchange="loadReport()">
+            </div>
+            <div>
+                <span class="trend-badge" id="trendBadge">—</span>
+            </div>
+        </div>
+
+        <!-- Loading -->
+        <div class="page-loader" id="loader" style="display:none">
+            <div class="loader"></div>
+            <p>Generating report...</p>
+        </div>
+
+        <!-- Empty state -->
+        <div class="empty-state" id="emptyState" style="display:none">
+            <div class="empty-icon">📄</div>
+            <h3>No Report Data</h3>
+            <p>No health records found for the selected month. Submit health data to generate reports.</p>
+            <a href="index.html" class="btn btn-primary">Enter Health Data →</a>
+        </div>
+
+        <!-- Report content -->
+        <div id="reportContent" style="display:none">
+            <!-- Summary Stats -->
+            <div class="report-summary-grid">
+                <div class="card report-stat animate-in">
+                    <div class="stat-label">Average Score</div>
+                    <div class="stat-value" id="avgScore" style="color:var(--accent-blue)">—</div>
+                </div>
+                <div class="card report-stat animate-in stagger-1">
+                    <div class="stat-label">Total Entries</div>
+                    <div class="stat-value" id="totalEntries" style="color:var(--accent-purple)">—</div>
+                </div>
+                <div class="card report-stat animate-in stagger-2">
+                    <div class="stat-label">Report Month</div>
+                    <div class="stat-value" id="reportMonth" style="color:var(--accent-green); font-size:1.2rem">—</div>
+                </div>
+            </div>
+
+            <!-- AI Summary -->
+            <div class="card report-section animate-in stagger-3">
+                <h3>🤖 AI Health Summary</h3>
+                <p id="reportSummary" style="color:var(--text-secondary); line-height:1.8;"></p>
+            </div>
+
+            <!-- Score Chart -->
+            <div class="card report-section animate-in stagger-4">
+                <h3>📈 Score Trend This Month</h3>
+                <div class="chart-container" style="height:250px">
+                    <canvas id="reportChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Improvements & Concerns -->
+            <div class="dashboard-grid">
+                <div class="card report-section animate-in">
+                    <h3>✅ Key Improvements</h3>
+                    <ul class="rec-list" id="improvements"></ul>
+                </div>
+                <div class="card report-section animate-in stagger-1">
+                    <h3>⚠️ Areas of Concern</h3>
+                    <ul class="rec-list" id="concerns"></ul>
+                </div>
+            </div>
+
+            <!-- Goals -->
+            <div class="card report-section animate-in stagger-2">
+                <h3>🎯 Next Month Goals</h3>
+                <div id="goals"></div>
+            </div>
+
+            <!-- Doctor Visit -->
+            <div id="doctorVisit" class="animate-in stagger-3"></div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // Set default month to current
+        const now = new Date();
+        document.getElementById("monthPicker").value = now.toISOString().slice(0, 7);
+
+        (async () => {
+            await requireAuth();
+            loadReport();
+        })();
+
+        async function loadReport() {
+            const month = document.getElementById("monthPicker").value;
+            if (!month) return;
+
+            document.getElementById("loader").style.display = "flex";
+            document.getElementById("reportContent").style.display = "none";
+            document.getElementById("emptyState").style.display = "none";
+
+            try {
+                const report = await api(`/get-report?month=${month}`);
+                document.getElementById("loader").style.display = "none";
+                document.getElementById("reportContent").style.display = "block";
+                renderReport(report);
+            } catch (err) {
+                document.getElementById("loader").style.display = "none";
+                if (err.message.includes("No health data")) {
+                    document.getElementById("emptyState").style.display = "block";
+                } else {
+                    document.getElementById("emptyState").style.display = "block";
+                    document.querySelector("#emptyState h3").textContent = "Error";
+                    document.querySelector("#emptyState p").textContent = err.message;
+                }
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Your personalized preventive healthcare dashboard with AI insights">
+    <title>Dashboard — Healthcare Score System</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💚</text></svg>">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <a href="index.html" class="navbar-brand">
+            <div class="logo-icon">💚</div>
+            HealthScore AI
+        </a>
+        <div class="navbar-links">
+            <a href="index.html">Health Data</a>
+            <a href="dashboard.html" class="active">Dashboard</a>
+            <a href="report.html">Reports</a>
+            <a href="chatbot.html">AI Chat</a>
+            <button class="btn-logout" onclick="handleLogout()">Logout</button>
+        </div>
+    </nav>
+
+    <div class="page-container" id="dashboardContent">
+        <!-- Loading state -->
+        <div class="page-loader" id="loader">
+            <div class="loader"></div>
+            <p>Loading your health dashboard...</p>
+        </div>
+
+        <!-- Empty state -->
+        <div class="empty-state" id="emptyState" style="display:none">
+            <div class="empty-icon">📊</div>
+            <h3>No Health Data Yet</h3>
+            <p>Submit your health data to see your personalized dashboard with AI-powered insights.</p>
+            <a href="index.html" class="btn btn-primary">Enter Health Data →</a>
+        </div>
+
+        <!-- Dashboard content (hidden until loaded) -->
+        <div id="dashboardMain" style="display:none">
+            <div class="page-header">
+                <h1>📊 Health Dashboard</h1>
+                <p>Your personalized preventive healthcare analytics</p>
+            </div>
+
+            <!-- Top Row: Score + Summary -->
+            <div class="dashboard-grid">
+                <!-- Health Score Card -->
+                <div class="card animate-in">
+                    <div class="card-header">
+                        <h3 class="card-title"><span class="card-icon green">🎯</span> Health Score</h3>
+                    </div>
+                    <div class="score-display" id="scoreCircle"></div>
+                    <div style="text-align:center;">
+                        <span id="riskBadge" class="risk-badge">—</span>
+                    </div>
+                    <p id="healthSummary" style="text-align:center; color:var(--text-secondary); margin-top:1rem; font-size:0.9rem;"></p>
+                </div>
+
+                <!-- Score Trend Chart -->
+                <div class="card card-wide animate-in stagger-1">
+                    <div class="card-header">
+                        <h3 class="card-title"><span class="card-icon blue">📈</span> Score Trend</h3>
+                    </div>
+                    <div class="chart-container" style="height:250px">
+                        <canvas id="scoreTrendChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Metrics Row -->
+            <div class="dashboard-grid">
+                <!-- BMI -->
+                <div class="card animate-in stagger-2">
+                    <div class="card-header"><h3 class="card-title"><span class="card-icon purple">⚖️</span> BMI</h3></div>
+                    <div class="metric-value" id="bmiValue">—</div>
+                </div>
+                <!-- Blood Pressure -->
+                <div class="card animate-in stagger-2">
+                    <div class="card-header"><h3 class="card-title"><span class="card-icon red">🩸</span> Blood Pressure</h3></div>
+                    <div class="metric-value" id="bpValue">—</div>
+                </div>
+                <!-- Sugar Level -->
+                <div class="card animate-in stagger-3">
+                    <div class="card-header"><h3 class="card-title"><span class="card-icon orange">🍬</span> Sugar Level</h3></div>
+                    <div class="metric-value" id="sugarValue">—</div>
+                </div>
+                <!-- Heart Rate -->
+                <div class="card animate-in stagger-3">
+                    <div class="card-header"><h3 class="card-title"><span class="card-icon red">❤️</span> Heart Rate</h3></div>
+                    <div class="metric-value" id="hrValue">—</div>
+                </div>
+            </div>
+
+            <!-- Trackers Row -->
+            <div class="dashboard-grid">
+                <!-- Steps -->
+                <div class="card animate-in stagger-4">
+                    <div class="card-header"><h3 class="card-title"><span class="card-icon green">🚶</span> Steps</h3></div>
+                    <div class="metric-value" id="stepsValue">—</div>
+                    <div class="metric-bar"><div class="metric-bar-fill" id="stepsBar" style="width:0%"></div></div>
+                    <div class="metric-unit" style="margin-top:0.5rem">Goal: 10,000 steps</div>
+                </div>
+                <!-- Water -->
+                <div class="card animate-in stagger-4">
+                    <div class="card-header"><h3 class="card-title"><span class="card-icon blue">💧</span> Water Intake</h3></div>
+                    <div class="metric-value" id="waterValue">—</div>
+                    <div class="metric-bar"><div class="metric-bar-fill" id="waterBar" style="width:0%"></div></div>
+                    <div class="metric-unit" style="margin-top:0.5rem">Goal: 3 liters</div>
+                </div>
+                <!-- Sleep -->
+                <div class="card animate-in stagger-5">
+                    <div class="card-header"><h3 class="card-title"><span class="card-icon purple">😴</span> Sleep</h3></div>
+                    <div class="metric-value" id="sleepValue">—</div>
+                    <div class="metric-bar"><div class="metric-bar-fill" id="sleepBar" style="width:0%"></div></div>
+                    <div class="metric-unit" style="margin-top:0.5rem">Goal: 7–9 hours</div>
+                </div>
+                <!-- Exercise -->
+                <div class="card animate-in stagger-5">
+                    <div class="card-header"><h3 class="card-title"><span class="card-icon orange">🏋️</span> Exercise</h3></div>
+                    <div class="metric-value" id="exerciseValue">—</div>
+                    <div class="metric-bar"><div class="metric-bar-fill" id="exerciseBar" style="width:0%"></div></div>
+                    <div class="metric-unit" style="margin-top:0.5rem">Goal: 60 min</div>
+                </div>
+            </div>
+
+            <!-- Bottom Row: Radar + Recommendations + Doctor -->
+            <div class="dashboard-grid">
+                <!-- Radar Chart -->
+                <div class="card animate-in">
+                    <div class="card-header">
+                        <h3 class="card-title"><span class="card-icon cyan">🎯</span> Health Radar</h3>
+                    </div>
+                    <div class="chart-container" style="height:280px">
+                        <canvas id="radarChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Recommendations -->
+                <div class="card animate-in stagger-1">
+                    <div class="card-header">
+                        <h3 class="card-title"><span class="card-icon orange">💡</span> AI Recommendations</h3>
+                    </div>
+                    <ul class="rec-list" id="recList"></ul>
+                </div>
+
+                <!-- Doctor Recommendations -->
+                <div class="card animate-in stagger-2">
+                    <div class="card-header">
+                        <h3 class="card-title"><span class="card-icon red">🩺</span> Doctor Advice</h3>
+                    </div>
+                    <div id="doctorRecs"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        (async () => {
+            const user = await requireAuth();
+            if (!user) return;
+
+            try {
+                const data = await api("/get-score");
+                document.getElementById("loader").style.display = "none";
+                document.getElementById("dashboardMain").style.display = "block";
+                renderDashboard(data);
+            } catch (err) {
+                document.getElementById("loader").style.display = "none";
+                if (err.message.includes("No health data")) {
+                    document.getElementById("emptyState").style.display = "block";
+                } else {
+                    document.getElementById("emptyState").style.display = "block";
+                    document.querySelector("#emptyState h3").textContent = "Error";
+                    document.querySelector("#emptyState p").textContent = err.message;
+                }
+            }
+        })();
+    </script>
+</body>
+</html>
