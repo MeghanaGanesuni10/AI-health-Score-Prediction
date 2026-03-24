@@ -379,14 +379,7 @@ def chatbot():
 
 if __name__ == "__main__":
     init_db()
+    port = int(os.environ.get("PORT", 5000))
     print("[OK] Database initialized")
-    print("[OK] Starting Healthcare Score API on http://localhost:5000")
-    app.run(debug=True, port=5000)
-from flask import Flask, send_from_directory
-import os
-
-app = Flask(__name__, static_folder='../frontend')
-
-@app.route('/')
-def home():
-    return send_from_directory('../frontend', 'index.html')
+    print(f"[OK] Starting Healthcare Score API on port {port}")
+    app.run(host="0.0.0.0", port=port)
